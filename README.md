@@ -1,2 +1,2 @@
-# Python-Projects
-This will contain all my public python prjects 
+# Python - Project 1
+First Python Game
