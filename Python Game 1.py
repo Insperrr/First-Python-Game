@@ -2,8 +2,6 @@ import pygame
 import random 
 pygame.init()
 
-clock = pygame.time.Clock()
-
 BACKGROUND = (36, 200, 255)
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 500
@@ -52,13 +50,7 @@ class Food(GameObject):
             else:
                 pass
         return False
-
-
-class Enemy(GameObject):
-    def __init__(self, x, y, width, height):
-        super().__init__(x, y, width, height)
-        self.color = (225, 225, 225) 
-             
+        
 
 class Player(GameObject):
     def __init__(self, x, y, width, height):
@@ -112,7 +104,7 @@ class Game:
         pygame.display.set_caption('Pygame Game')
         self.running = True
         self.state = "start"
-    
+        self.clock = pygame.time.Clock()
 
     def run(self):
         while self.running:
@@ -142,7 +134,7 @@ class Game:
 
             self.display_start_screen()
 
-#Unused 
+    #Unused 
     def end(self):
         pass
 
@@ -165,30 +157,28 @@ class Game:
                      Food(80, 80, -3, ("white")),
                      Food(80, 80, -3, ("white"))]
         all_foods = foods + bad_foods
-# Ensures that all food is spwaned non overlapping
+        # Ensures that all food is spwaned non overlapping
         for food in all_foods:
                 player.validate_score(food, all_foods, True)
 
         player.point_amount = 0
         while self.state == "play":
-#handle inputs
+            elapsed_ticks = pygame.time.get_ticks() - start_ticks
+            elapsed_seconds = elapsed_ticks / 1000 
+            if elapsed_seconds >= TIME:
+                self.state = "start"
+            
+            #handle inputs
             self.handle_events()
             dy, dx = player.movement()
 
-#change based on inputs
-            delta_time = clock.tick(60) / 1000.0
+            #change based on inputs
+            delta_time = self.clock.tick(60) / 1000.0
             player.move(dx, dy, self.screen, delta_time)
             for food in all_foods:
                 player.validate_score(food, all_foods)
-
-            elapsed_ticks = pygame.time.get_ticks() - start_ticks
-            elapsed_seconds = elapsed_ticks / 1000 
-#change screen
+            #change screen
             self.display_game_screen(elapsed_seconds, player, *foods, *bad_foods)
-
-
-            if elapsed_seconds >= TIME:
-                self.state = "start"
 
 
     def display_game_screen(self, elapsed_seconds, player, *args):
